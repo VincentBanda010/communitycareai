@@ -50,7 +50,7 @@ local.properties
 
 # Kotlin
 .kotlin
-.google-services.json
+google-services.json
 
 # Temporary files
 *.log
