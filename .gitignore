@@ -49,7 +49,8 @@ local.properties
 .idea/sonarlint/
 
 # Kotlin
-.kotlin/
+.kotlin
+.google-services.json
 
 # Temporary files
 *.log
