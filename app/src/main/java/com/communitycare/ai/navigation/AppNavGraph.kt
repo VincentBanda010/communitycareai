@@ -14,7 +14,9 @@ import com.communitycare.ai.ui.screens.*
 
 @Composable
 fun AppNavGraph(navController: NavHostController, container: AppContainer, busy: Boolean,
-                error: String?, onSignIn: () -> Unit, onRecord: (Triage) -> Boolean,
+                error: String?, onSignIn: (String, String, Boolean) -> Unit,
+                onRegister: (String, String, String, String, String) -> Unit,
+                onReset: (String) -> Unit, onBrowserSignIn: () -> Unit, message: String?, onRecord: (Triage) -> Boolean,
                 onSync: () -> Unit, onLogout: () -> Unit) {
     val profile by container.auth.profile.collectAsState()
     val allRecords by container.encounters.records.collectAsState()
@@ -35,7 +37,7 @@ fun AppNavGraph(navController: NavHostController, container: AppContainer, busy:
     if (account != null) {
         key(account.subject, account.orgUnit) {
         DashboardScreen(account, allRecords.filter { it.belongsTo(account) }, sync,
-            error, onRecord, onSync, onSignIn, onLogout,
+            error, onRecord, onSync, onBrowserSignIn, onLogout,
             if (quality.owner == account.subject && quality.orgUnit == account.orgUnit) quality else QualityUiState(),
             { scope.launch { container.quality.refresh(account) } }, container.clinic)
         }
@@ -43,14 +45,14 @@ fun AppNavGraph(navController: NavHostController, container: AppContainer, busy:
     }
     NavHost(navController = navController, startDestination = NavRoutes.GET_STARTED) {
         composable(NavRoutes.GET_STARTED) {
-            GetStartedScreen(onGetStarted = { navController.navigate(NavRoutes.SIGN_IN) },
+            GetStartedScreen(onGetStarted = { navController.navigate(NavRoutes.SIGN_UP) },
                 onSignIn = { navController.navigate(NavRoutes.SIGN_IN) })
         }
         composable(NavRoutes.SIGN_UP) {
-            SignUpScreen(onSignIn = { navController.navigate(NavRoutes.SIGN_IN) })
+            SignUpScreen(onSignUp = onRegister, onSignIn = { navController.navigate(NavRoutes.SIGN_IN) }, busy = busy, error = error, message = message)
         }
         composable(NavRoutes.SIGN_IN) {
-            SignInScreen(onSignIn, { navController.navigate(NavRoutes.SIGN_UP) }, busy, error)
+            SignInScreen(onSignIn, { navController.navigate(NavRoutes.SIGN_UP) }, busy, error, message, onReset, onBrowserSignIn)
         }
     }
 }

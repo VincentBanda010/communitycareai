@@ -28,13 +28,17 @@ import com.communitycare.ai.ui.theme.*
 
 @Composable
 fun SignInScreen(
-    onSignIn: () -> Unit,
-    onSignUp: () -> Unit, busy: Boolean = false, error: String? = null
+    onSignIn: (String, String, Boolean) -> Unit,
+    onSignUp: () -> Unit, busy: Boolean = false, error: String? = null, message: String? = null,
+    onReset: (String) -> Unit, onBrowserSignIn: () -> Unit
 ) {
     var email           by remember { mutableStateOf("") }
     var password        by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe      by remember { mutableStateOf(false) }
+    var resetOpen by remember { mutableStateOf(false) }
+    var resetIdentity by remember { mutableStateOf("") }
+    var formError by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -90,17 +94,89 @@ fun SignInScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
 
-                    Icon(Icons.Filled.VerifiedUser, null, tint = TealPrimary, modifier = Modifier.size(44.dp))
-                    Text("CommunityCare worker sign in", fontWeight = FontWeight.Bold, fontSize = 19.sp, color = TealDark)
-                    Text("Continue to the secure sign-in page, then return to your patient dashboard.", color = TextSecondary)
-                    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                    Button(onClick = onSignIn, enabled = !busy, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(26.dp)) {
-                        if (busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
-                        else Text("Sign in securely", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    }
-                    Text("Your programme administrator assigns your facility. After signing in, local records are encrypted on this phone.", fontSize = 12.sp, color = TextSecondary)
-                    TextButton(onClick = onSignUp, enabled = !busy) { Text("Account or password help") }
+                    (formError ?: error)?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    message?.let { Text(it, color = TealDark) }
+                    AuthTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = "Email Address",
+                        leadingIcon = Icons.Filled.Email,
+                        keyboardType = KeyboardType.Email
+                    )
 
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password") },
+                        leadingIcon = {
+                            Icon(Icons.Filled.Lock, null, tint = TealPrimary)
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                    null, tint = TealPrimary
+                                )
+                            }
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = authTextFieldColors()
+                    )
+
+                    // Remember me + Forgot password row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = rememberMe,
+                                onCheckedChange = { rememberMe = it },
+                                colors = CheckboxDefaults.colors(checkedColor = TealPrimary)
+                            )
+                            Text("Remember me", fontSize = 13.sp, color = TextSecondary)
+                        }
+                        TextButton(onClick = { resetIdentity = email; resetOpen = true }, enabled = !busy) {
+                            Text("Forgot Password?", fontSize = 13.sp, color = TealPrimary, fontWeight = FontWeight.SemiBold)
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            if (email.isBlank() || password.isBlank()) formError = "Enter your email or username and password."
+                            else { formError = null; onSignIn(email, password, rememberMe); password = "" }
+                        }, enabled = !busy,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(26.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
+                    ) {
+                        Text(if (busy) "Signing in…" else "Sign In", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = White)
+                    }
+
+                    Text("You can also use your assigned username in the Email Address field.", fontSize = 12.sp, color = TextSecondary)
+                    TextButton(onClick = onBrowserSignIn, enabled = !busy) { Text("Use browser for account setup") }
+                    // ── Divider ───────────────────────────────────
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFFE0E0E0))
+                        Text("  or continue with  ", fontSize = 12.sp, color = TextSecondary)
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFFE0E0E0))
+                    }
+
+                    Text("Google and Microsoft sign-in are not connected yet.", fontSize = 12.sp, color = TextSecondary)
+                    // ── Social logins ─────────────────────────────
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        SocialButton(modifier = Modifier.weight(1f), label = "Google", icon = Icons.Filled.Language)
+                        SocialButton(modifier = Modifier.weight(1f), label = "Microsoft", icon = Icons.Filled.Computer)
+                    }
                 }
             }
 
@@ -109,8 +185,8 @@ fun SignInScreen(
             TextButton(onClick = onSignUp) {
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(color = TextSecondary)) { append("Need a nurse account?  ") }
-                        withStyle(SpanStyle(color = TealPrimary, fontWeight = FontWeight.Bold)) { append("Request access") }
+                        withStyle(SpanStyle(color = TextSecondary)) { append("Don't have an account?  ") }
+                        withStyle(SpanStyle(color = TealPrimary, fontWeight = FontWeight.Bold)) { append("Sign Up") }
                     },
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center
@@ -120,12 +196,19 @@ fun SignInScreen(
             Spacer(Modifier.height(32.dp))
         }
     }
+    if (resetOpen) AlertDialog(onDismissRequest = { resetOpen = false }, title = { Text("Reset password") }, text = {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedTextField(resetIdentity, { resetIdentity = it }, label = { Text("Email or username") }, singleLine = true)
+            Text("Email recovery requires the programme's email service. If unavailable, contact your administrator.", fontSize = 12.sp)
+        }
+    }, confirmButton = { TextButton(enabled = resetIdentity.isNotBlank() && !busy, onClick = { onReset(resetIdentity); resetOpen = false }) { Text("Request reset") } },
+        dismissButton = { TextButton(onClick = { resetOpen = false }) { Text("Cancel") } })
 }
 
 @Composable
 private fun SocialButton(modifier: Modifier, label: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     OutlinedButton(
-        onClick = {},
+        onClick = {}, enabled = false,
         modifier = modifier.height(46.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary)

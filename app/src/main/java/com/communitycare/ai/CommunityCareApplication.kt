@@ -32,11 +32,11 @@ class AppContainer(application: Application) {
     fun remote(profile: Profile) = object : EncounterRemote {
         override suspend fun submit(item: LocalEncounter): Receipt {
             check(item.belongsTo(profile))
-            return api.submit(item.id, "Bearer ${auth.accessToken(profile)}", item.orgUnit, item.submission).checkedBody()
+            return api.submit(item.id, "Bearer ${auth.accessToken(profile, api)}", item.orgUnit, item.submission).checkedBody()
         }
         override suspend fun receipt(item: LocalEncounter): Receipt {
             check(item.belongsTo(profile))
-            return api.receipt(item.id, "Bearer ${auth.accessToken(profile)}", item.orgUnit).checkedBody()
+            return api.receipt(item.id, "Bearer ${auth.accessToken(profile, api)}", item.orgUnit).checkedBody()
         }
     }
 }

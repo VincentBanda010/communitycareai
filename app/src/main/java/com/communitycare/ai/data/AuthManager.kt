@@ -29,10 +29,23 @@ class AuthManager(context: Context, private val storage: SecureStorage) {
     private val service = AuthorizationService(context.applicationContext)
     private val gson = Gson()
     private val mutex = Mutex()
+    private var nativeSession = storage.read("native-session.bin")?.let { gson.fromJson(it, NativeStoredSession::class.java).also { session -> session.profile.validate() } }
     private val saved = storage.read("session.bin")?.let { gson.fromJson(it, StoredSession::class.java) }
     private var authorization = saved?.let { AuthState.jsonDeserialize(it.authorization) }
-    private val mutableProfile = MutableStateFlow(saved?.profile?.validate())
+    private val mutableProfile = MutableStateFlow(nativeSession?.profile ?: saved?.profile?.validate())
     val profile = mutableProfile.asStateFlow()
+
+    suspend fun loginNative(username: String, password: String, remember: Boolean, api: BackendApi) = mutex.withLock {
+        val token = api.nativeLogin(NativeLogin(username.trim(), password)).checkedBody().validate()
+        val account = api.me("Bearer ${token.accessToken}").checkedBody().validate()
+        val session = NativeStoredSession(token.accessToken, token.refreshToken,
+            System.currentTimeMillis() / 1000 + token.expiresIn, account, remember)
+        storage.write("native-session.bin", if (remember) gson.toJson(session) else null)
+        storage.write("session.bin", null)
+        authorization = null
+        nativeSession = session
+        mutableProfile.value = account
+    }
 
     suspend fun loginIntent(): Intent {
         val configuration = suspendCancellableCoroutine<AuthorizationServiceConfiguration> { continuation ->
@@ -75,12 +88,33 @@ class AuthManager(context: Context, private val storage: SecureStorage) {
         // Commit the identity and its tokens together, only after the backend
         // confirms this account is assigned to an allowed organisation.
         storage.write("session.bin", gson.toJson(StoredSession(freshState.jsonSerializeString(), account)))
+        storage.write("native-session.bin", null)
+        nativeSession = null
         authorization = freshState
         mutableProfile.value = account
     }
 
-    suspend fun accessToken(expected: Profile): String = mutex.withLock {
+    suspend fun accessToken(expected: Profile, api: BackendApi): String = mutex.withLock {
         if (mutableProfile.value != expected) throw HttpFailure(401)
+        nativeSession?.let { session ->
+            if (session.expiresAt > System.currentTimeMillis() / 1000 + 30) return@withLock session.accessToken
+            val token = try { api.nativeRefresh(NativeRefresh(session.refreshToken)).checkedBody().validate() }
+            catch (failure: HttpFailure) {
+                if (failure.status == 401) {
+                    storage.write("native-session.bin", null); nativeSession = null; mutableProfile.value = null
+                }
+                throw failure
+            }
+            val account = api.me("Bearer ${token.accessToken}").checkedBody().validate()
+            if (account.subject != expected.subject) throw HttpFailure(401)
+            val refreshed = NativeStoredSession(token.accessToken, token.refreshToken,
+                System.currentTimeMillis() / 1000 + token.expiresIn, account, session.remember)
+            storage.write("native-session.bin", if (session.remember) gson.toJson(refreshed) else null)
+            nativeSession = refreshed
+            mutableProfile.value = account
+            if (account.orgUnit != expected.orgUnit) throw HttpFailure(403)
+            return@withLock token.accessToken
+        }
         val state = authorization ?: throw HttpFailure(401)
         val token = suspendCancellableCoroutine<String> { continuation ->
             state.performActionWithFreshTokens(service) { accessToken, _, error ->
@@ -101,6 +135,8 @@ class AuthManager(context: Context, private val storage: SecureStorage) {
     }
 
     suspend fun logout() = mutex.withLock {
+        storage.write("native-session.bin", null)
+        nativeSession = null
         storage.write("session.bin", null)
         authorization = null
         mutableProfile.value = null

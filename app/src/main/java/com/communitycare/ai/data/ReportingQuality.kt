@@ -49,7 +49,7 @@ class QualityRepository(private val auth: AuthManager, private val api: BackendA
         if (auth.profile.value != expected) return@withLock
         mutableState.value = QualityUiState(expected.subject, expected.orgUnit, loading = true)
         try {
-            val result = api.quality("Bearer ${auth.accessToken(expected)}", expected.orgUnit)
+            val result = api.quality("Bearer ${auth.accessToken(expected, api)}", expected.orgUnit)
                 .checkedBody().validate(expected)
             if (auth.profile.value == expected) mutableState.value =
                 QualityUiState(expected.subject, expected.orgUnit, snapshot = result)

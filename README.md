@@ -115,3 +115,8 @@ Live nonclinical reporting-quality AI is implemented. See [release status](docs/
 ## Restored app experience
 
 Version 1.2 restores the original CommunityCare dashboard, quick actions, patient cards, five-tab navigation and sign-in styling while retaining hosted login, DHIS2 reporting and experimental reporting-quality AI. Patient registration, search, appointments and worker-entered notes use encrypted local storage. Patient identities and notes are not sent through the aggregate reporting contract. Messaging and clinical prediction remain unimplemented. See [feature and data boundaries](docs/RESTORED_APP.md).
+
+
+## Original on phone account forms
+
+Version 1.3 restores the original Create Account and Sign In fields directly on the phone, connected to the owned identity service through the Python backend. Live registration, login, refresh, pilot-only assignment and reporting analysis are verified. Checks: 49 backend tests and 22 Android tests, assembly and lint. [Account guide](docs/NATIVE_ACCOUNTS.md). Gmail recovery email still requires the owner’s app password.

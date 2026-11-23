@@ -8,6 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PUT
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 enum class Triage(val label: String) {
@@ -57,6 +58,11 @@ data class LocalEncounter(
 }
 
 interface BackendApi {
+    @POST("api/v1/auth/login") suspend fun nativeLogin(@Body form: NativeLogin): Response<NativeTokens>
+    @POST("api/v1/auth/refresh") suspend fun nativeRefresh(@Body form: NativeRefresh): Response<NativeTokens>
+    @POST("api/v1/auth/register") suspend fun nativeRegister(@Body form: NativeRegistration): Response<RegistrationResult>
+    @POST("api/v1/auth/password-reset") suspend fun nativeReset(@Body form: NativeReset): Response<NativeNotice>
+
     @GET("api/v1/reporting/quality")
     suspend fun quality(@Header("Authorization") bearer: String, @Header("X-Organisation-Unit") orgUnit: String): Response<QualitySnapshot>
     @GET("api/v1/me")
