@@ -98,3 +98,10 @@ own authentication, queue, encryption and PostgreSQL tests.
 
 Browser handoff, Keystore persistence and background scheduling require these real
 device checks in addition to JVM tests and compilation.
+
+## Implementation guides
+
+- [Frontend guide](docs/FRONTEND_GUIDE.md)
+- [Backend guide](docs/BACKEND_GUIDE.md)
+- [API contract](docs/API_CONTRACT.md)
+- [Current submission status and limitations](docs/SUBMISSION_STATUS.md)
