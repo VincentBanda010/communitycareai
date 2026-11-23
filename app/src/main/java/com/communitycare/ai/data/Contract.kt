@@ -58,6 +58,9 @@ data class LocalEncounter(
 }
 
 interface BackendApi {
+    @GET("api/v1/messages") suspend fun messages(@Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String): Response<TeamInbox>
+    @PUT("api/v1/messages/{id}") suspend fun sendMessage(@Path("id") id: String, @Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String, @Body form: MessageForm): Response<TeamMessage>
+
     @POST("api/v1/auth/login") suspend fun nativeLogin(@Body form: NativeLogin): Response<NativeTokens>
     @POST("api/v1/auth/refresh") suspend fun nativeRefresh(@Body form: NativeRefresh): Response<NativeTokens>
     @POST("api/v1/auth/register") suspend fun nativeRegister(@Body form: NativeRegistration): Response<RegistrationResult>

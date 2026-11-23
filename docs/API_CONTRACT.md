@@ -54,3 +54,7 @@ GET /api/v1/reporting/quality requires the worker bearer token. Android sends X-
 POST /api/v1/auth/register, /api/v1/auth/login, /api/v1/auth/refresh and /api/v1/auth/password-reset accept their corresponding form bodies without an existing bearer header. See NATIVE_ACCOUNTS.md for exact fields and data handling. Registration returns 201 with ENGINEERING_PILOT or AWAITING_ASSIGNMENT. Login and refresh return accessToken, refreshToken and expiresIn only after signed identity and organisation validation. Reset returns a generic 202 when recovery delivery is configured; missing SMTP configuration returns 503 without claiming delivery.
 
 Account form validation responses are redacted. Unknown fields are rejected, client-supplied facility or administrator permissions are not accepted, declared oversized forms return 413, and rate limits return 429. A requested role remains profile metadata. Ordinary workers do not request the backend's account-management scope. Protected reporting and identity routes continue to require a verified bearer token.
+
+## Facility team messaging
+
+See [the 1.4 messaging contract](ORGANIZED_APP.md#messaging-api) for authenticated facility chat, limits and retry semantics.

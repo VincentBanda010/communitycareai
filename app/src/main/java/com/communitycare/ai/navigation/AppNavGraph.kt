@@ -39,7 +39,7 @@ fun AppNavGraph(navController: NavHostController, container: AppContainer, busy:
         DashboardScreen(account, allRecords.filter { it.belongsTo(account) }, sync,
             error, onRecord, onSync, onBrowserSignIn, onLogout,
             if (quality.owner == account.subject && quality.orgUnit == account.orgUnit) quality else QualityUiState(),
-            { scope.launch { container.quality.refresh(account) } }, container.clinic)
+            { scope.launch { container.quality.refresh(account) } }, container.clinic, container)
         }
         return
     }

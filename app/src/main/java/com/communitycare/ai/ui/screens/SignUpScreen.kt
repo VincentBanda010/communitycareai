@@ -55,7 +55,7 @@ fun SignUpScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(220.dp)
                 .clip(RoundedCornerShape(bottomStart = 999.dp, bottomEnd = 999.dp))
                 .background(
                     Brush.verticalGradient(listOf(TealPrimary, TealDark))
@@ -65,11 +65,12 @@ fun SignUpScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .safeDrawingPadding().imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(Modifier.height(44.dp))
+            Spacer(Modifier.height(20.dp))
 
             // ── Header inside the arc ──────────────────────────────
             Box(
@@ -88,7 +89,7 @@ fun SignUpScreen(
             }
             Spacer(Modifier.height(10.dp))
             Text("Create Account", fontWeight = FontWeight.Black, fontSize = 24.sp, color = White)
-            Text("Join CommunityCare AI today", fontSize = 13.sp, color = White.copy(alpha = 0.85f))
+
 
             Spacer(Modifier.height(32.dp))
 
@@ -224,7 +225,7 @@ fun SignUpScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
-                        shape = RoundedCornerShape(26.dp),
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
                     ) {
                         Text(if (busy) "Creating account…" else "Create Account", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = White)

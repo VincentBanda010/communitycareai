@@ -3,6 +3,8 @@
 Native Kotlin / Jetpack Compose app connected to the owned CommunityCare services
 on Contabo. Minimum Android version: 8.0 (API 26).
 
+Current release: **1.4 preview**. [Download Android app](https://github.com/VincentBanda010/communitycareai/releases/tag/v1.4.0-preview). See [screen organization and messaging contract](docs/ORGANIZED_APP.md).
+
 ## Connected services
 
 | Setting | Value |
@@ -18,11 +20,10 @@ DHIS2 is contacted by the backend only.
 
 ## Behavior
 
-- Browser sign-in uses AppAuth, OpenID Connect Authorization Code + PKCE S256.
+- Native account creation and sign-in use the hosted account endpoints. Browser setup uses AppAuth, OpenID Connect Authorization Code + PKCE S256.
   The backend confirms the authenticated worker's identity and assigned organisation
   using `GET /api/v1/me` before the app opens the dashboard.
-- Staff accounts and facility assignments are managed by the programme administrator.
-  The account-help screen explains this; public role self-assignment is unavailable.
+- New accounts can register in the app. The server assigns the configured engineering pilot facility; requested roles do not grant privileges. Operational facility assignments remain administrator controlled.
 - Tokens and report records are encrypted using AES-256-GCM and an Android Keystore
   key. App backup is disabled. Unreadable encrypted data is preserved and reported,
   rather than silently reset.
@@ -41,13 +42,12 @@ DHIS2 is contacted by the backend only.
 The existing repository was a UI prototype: sign-in navigated without verification,
 the dashboard displayed hard-coded patients and counts, and sync buttons were empty.
 This branch connects account access and the supported assessment-reporting pipeline.
-Clinical assessment, AI/image/voice processing, patient registers, messaging and
-referral documents remain future modules. The reporting form records the outcome
+Patient registers, appointments and care notes are encrypted local modules. Facility messaging is connected to PostgreSQL through the Python API. Clinical diagnostic AI, image/voice processing and generated referral documents remain future modules. The reporting form records the outcome
 already confirmed by a health worker using approved clinical guidance.
 
 ## API contract
 
-Requests require `Authorization: Bearer <worker-access-token>`. Submission and receipt polling also send `X-Organisation-Unit` with the original facility for that report. The backend rejects a mismatch after token refresh or staff reassignment; reports never move automatically between facilities.
+Protected requests require `Authorization: Bearer <worker-access-token>`. Native registration, login, refresh and recovery have the public account-route exception documented in docs/NATIVE_ACCOUNTS.md. Submission and receipt polling also send `X-Organisation-Unit` with the original facility for that report. The backend rejects a mismatch after token refresh or staff reassignment; reports never move automatically between facilities.
 
 | Method | Route | Use |
 | --- | --- | --- |

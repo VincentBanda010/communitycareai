@@ -34,7 +34,7 @@ fun ReportingScreen(profile: Profile, records: List<LocalEncounter>, sync: SyncS
     val delivered = records.count { it.state == DeliveryState.FORWARDED }
     val review = records.count { it.state == DeliveryState.REJECTED || it.state == DeliveryState.CONFLICT }
     Scaffold(containerColor = TealSurface, topBar = {
-        TopAppBar(title = { Text("CommunityCare AI") }, actions = {
+        TopAppBar(title = { Text("Reporting") }, actions = {
             TextButton(onClick = { logoutDialog = true }) { Text("Sign out") }
         })
     }) { padding ->
@@ -42,14 +42,16 @@ fun ReportingScreen(profile: Profile, records: List<LocalEncounter>, sync: SyncS
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
                 Column(Modifier.fillMaxWidth().background(TealDark).padding(20.dp)) {
-                    Text("Welcome, ${profile.name}", color = Color.White,
+                    Text("Assessment reports", color = Color.White,
                         style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(8.dp))
-                    Text("Reports saved on this device", color = Color.White)
+                    Text("Record the outcome you confirmed.", color = Color.White)
                     Spacer(Modifier.height(16.dp))
-                    Button(onClick = { triage = null; saveError = false; recordDialog = true }) { Text("Record assessment outcome") }
+                    Button(onClick = { triage = null; saveError = false; recordDialog = true }) { Text("New report") }
                 }
             }
+            item { ReportingQualityCard(quality, onRefreshQuality) }
+            item { Text("On this phone", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Metric("Saved today", countToday, Modifier.weight(1f))
@@ -67,7 +69,7 @@ fun ReportingScreen(profile: Profile, records: List<LocalEncounter>, sync: SyncS
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(if (sync.busy) "Checking delivery…" else "Delivery to DHIS2", fontWeight = FontWeight.Bold)
                         Text(sync.message ?: if (pending > 0) "$pending reports awaiting confirmation. They remain saved on this device."
-                            else "No reports awaiting delivery.")
+                            else "All saved reports delivered.")
                         sync.checkedAt?.let { Text("Last checked: ${displayTime(it)}", style = MaterialTheme.typography.bodySmall) }
                         Button(onClick = onSync, enabled = !sync.busy) { Text("Sync now") }
                         if (sync.message?.contains("Sign in") == true) {
@@ -77,7 +79,6 @@ fun ReportingScreen(profile: Profile, records: List<LocalEncounter>, sync: SyncS
                 }
             }
             error?.let { message -> item { Text(message, color = MaterialTheme.colorScheme.error) } }
-            item { ReportingQualityCard(quality, onRefreshQuality) }
             item { Text("Recent reports", style = MaterialTheme.typography.titleLarge) }
             if (records.isEmpty()) item { Text("No reports saved yet. Record an assessment outcome to begin.") }
             items(records.sortedByDescending { it.occurredAt }.take(50), key = { it.id }) { record ->
