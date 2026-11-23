@@ -16,6 +16,7 @@ class AppContainer(application: Application) {
     val storage = SecureStorage(application)
     val auth = AuthManager(application, storage)
     val encounters = EncounterStore(storage)
+    val clinic = ClinicStore({ storage.read("clinic-records.bin") }, { storage.write("clinic-records.bin", it) })
     val syncMutex = Mutex()
     val syncStatus = MutableStateFlow(storage.read("sync-status.bin")?.let {
         Gson().fromJson(it, SyncStatus::class.java).copy(busy = false)

@@ -61,3 +61,7 @@ The first implemented AI module is experimental reporting-quality review of the 
 ## Live reporting review
 
 The reporting-quality card queries the authenticated backend, refreshes every thirty seconds while the dashboard is open and supports manual refresh. It shows live facility-level counts separately from the device outbox, along with snapshot time, model status and dataset fingerprint. It clears results on logout and presents source failures explicitly.
+
+## Restored nurse workspace
+
+Version 1.2 restores the original dashboard and adds encrypted local patient registration, search, appointments and worker-entered notes. The Assess tab retains live DHIS2 reporting and reporting-quality AI. No sample patient rows or fixed counts are inserted. See RESTORED_APP.md for exact data boundaries, supported actions and the 18-test build evidence.

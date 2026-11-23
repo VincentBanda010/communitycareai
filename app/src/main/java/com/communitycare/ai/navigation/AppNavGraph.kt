@@ -33,10 +33,12 @@ fun AppNavGraph(navController: NavHostController, container: AppContainer, busy:
         if (account != null && sync.checkedAt != null) container.quality.refresh(account)
     }
     if (account != null) {
+        key(account.subject, account.orgUnit) {
         DashboardScreen(account, allRecords.filter { it.belongsTo(account) }, sync,
             error, onRecord, onSync, onSignIn, onLogout,
             if (quality.owner == account.subject && quality.orgUnit == account.orgUnit) quality else QualityUiState(),
-            { scope.launch { container.quality.refresh(account) } })
+            { scope.launch { container.quality.refresh(account) } }, container.clinic)
+        }
         return
     }
     NavHost(navController = navController, startDestination = NavRoutes.GET_STARTED) {
