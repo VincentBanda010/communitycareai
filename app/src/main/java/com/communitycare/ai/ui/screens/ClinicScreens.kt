@@ -28,7 +28,7 @@ fun ClinicRecordsScreen(profile: Profile, clinic: ClinicStore, mode: String,
     var entryKind by remember { mutableStateOf<String?>(null) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).safeDrawingPadding().padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Text(when(mode) { "APPOINTMENT" -> "Appointments"; "NOTE" -> "Care notes"; else -> "Patients" },
+        Text(when(mode) { "APPOINTMENT" -> "Appointments"; "NOTE" -> "Treatments & notes"; else -> "Patients" },
             style = MaterialTheme.typography.headlineMedium, color = TealDark, fontWeight = FontWeight.Bold)
         Text("Private register · Saved on this phone", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
         OutlinedTextField(query, { query = it }, label = { Text("Search patients") }, modifier = Modifier.fillMaxWidth(), singleLine = true)

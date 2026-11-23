@@ -79,7 +79,7 @@ fun SignInScreen(
 
             Spacer(Modifier.height(10.dp))
             Text("Welcome Back", fontWeight = FontWeight.Black, fontSize = 24.sp, color = White)
-
+            Text("Sign in to your account", fontSize = 13.sp, color = White.copy(alpha = 0.85f))
 
             Spacer(Modifier.height(32.dp))
 
@@ -160,8 +160,23 @@ fun SignInScreen(
                         Text(if (busy) "Signing in…" else "Sign In", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = White)
                     }
 
-                    TextButton(onClick = onBrowserSignIn, enabled = !busy) { Text("More sign-in options") }
+                    TextButton(onClick = onBrowserSignIn, enabled = !busy) { Text("Browser sign-in & account setup") }
+                    // ── Divider ───────────────────────────────────
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFFE0E0E0))
+                        Text("  or continue with  ", fontSize = 12.sp, color = TextSecondary)
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFFE0E0E0))
+                    }
 
+                    Text("Google & Microsoft · Setup pending", fontSize = 11.sp, color = TextSecondary)
+                    // ── Social logins ─────────────────────────────
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        SocialButton(modifier = Modifier.weight(1f), label = "Google", icon = Icons.Filled.Language)
+                        SocialButton(modifier = Modifier.weight(1f), label = "Microsoft", icon = Icons.Filled.Computer)
+                    }
                 }
             }
 
@@ -184,8 +199,22 @@ fun SignInScreen(
     if (resetOpen) AlertDialog(onDismissRequest = { resetOpen = false }, title = { Text("Reset password") }, text = {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             OutlinedTextField(resetIdentity, { resetIdentity = it }, label = { Text("Email or username") }, singleLine = true)
-            Text("If email recovery is unavailable, contact your administrator.", fontSize = 12.sp)
+            Text("Email recovery requires the programme's email service. If unavailable, contact your administrator.", fontSize = 12.sp)
         }
     }, confirmButton = { TextButton(enabled = resetIdentity.isNotBlank() && !busy, onClick = { onReset(resetIdentity); resetOpen = false }) { Text("Request reset") } },
         dismissButton = { TextButton(onClick = { resetOpen = false }) { Text("Cancel") } })
+}
+
+@Composable
+private fun SocialButton(modifier: Modifier, label: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+    OutlinedButton(
+        onClick = {}, enabled = false,
+        modifier = modifier.height(46.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary)
+    ) {
+        Icon(icon, contentDescription = label, tint = TealPrimary, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(label, fontSize = 13.sp)
+    }
 }

@@ -12,7 +12,7 @@ android {
         applicationId = "com.communitycare.ai"
         minSdk = 26
         targetSdk = 35
-        versionCode = 6
+        versionCode = 7
         versionName = "1.4-preview"
         manifestPlaceholders["appAuthRedirectScheme"] = "communitycare"
         buildConfigField("String", "API_BASE_URL", "\"https://care-api.95.111.247.118.sslip.io/\"")
