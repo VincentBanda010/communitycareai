@@ -15,8 +15,9 @@ DHIS2 URL: `https://care-dhis.95.111.247.118.sslip.io/`. This is an owned persis
 | `app/models.py` | Strict timestamp and triage payload validation |
 | `app/queue.py` and `app/schema.sql` | PostgreSQL persistence, encryption, HMAC deduplication and leases |
 | `app/delivery.py` | DHIS2 Tracker import, response interpretation and retries |
+| `app/quality.py` | Read-only scoped DHIS2 snapshot and experimental IsolationForest |
 | `app/config.py` | Required configuration and validation |
-| `deploy/CONTABO.md` | Hosting, accounts, verification and backup procedures |
+| Server deployment configuration | Protected hosting configuration retained on the server |
 
 ## Queue lifecycle
 
@@ -44,7 +45,7 @@ docker compose -f compose.json logs --tail 50 communitycare-api
 
 Logs must exclude tokens, report payloads and remote clinical response bodies. Health checks establish API/database availability, not complete DHIS2 delivery readiness or AI capability.
 
-The full 36-test suite passed against a separate test database on 23 November 2026. To repeat in that isolated environment:
+The full 42-test suite passed against a separate test database on 23 November 2026. To repeat in that isolated environment:
 
 ```sh
 docker compose -f compose.json run --rm --no-deps --user 0 \
@@ -59,3 +60,7 @@ docker compose -f compose.json run --rm --no-deps --user 0 \
 Daily server-local backups and a previous isolated restore check exist. Offsite backup storage remains to be configured. Preserve the queue key with protected backups. See the deployment guide for commands and ownership.
 
 The update download routes serve files; they do not create, train or validate models. No model/protocol packages were published at the last audit, and the mobile app has no signed update installer. No clinical AI endpoint is implemented. DHIS2 dashboards and cross-device mobile analytics are also not implemented.
+
+## Reporting quality endpoint
+
+GET /api/v1/reporting/quality verifies the signed organisation claim and original-facility header before reading the configured DHIS2 Tracker program and stage. It uses a ten-second bounded cache and rejects cross-scope source rows. Source errors do not return fabricated or stale successful results. The model card documents the exact experimental method and limitations.

@@ -43,3 +43,7 @@ Receipt ID must match the requested record and state must be recognised. Do not 
 Authenticated update routes are `/api/v1/updates/manifest.jws` and `/api/v1/updates/{sha256}.zip`. Missing files return 404. These are file-serving routes; mobile verification/activation and published model assets are absent in the current release.
 
 There is no current API for patient registers, clinical AI inference, all-facility dashboards or streaming data. Reports submitted while offline cannot appear in DHIS2 until connectivity and delivery succeed.
+
+## Reporting quality
+
+GET /api/v1/reporting/quality requires the worker bearer token. Android sends X-Organisation-Unit with the original assigned facility. A mismatch returns 403 before source access. The response contains orgUnit, generatedAt, source, dataContext, reportCount, validCount, invalidCount, categoryCounts, delayedOver24Hours, snapshotLimit, truncated, cacheSeconds, modelVersion, datasetFingerprint, modelStatus, trainingSamples, minimumSamples, fittedOn, candidates and notice. Candidate fields are eventId, occurredAt, category, delayHours, anomalyScore and reviewSuggested. Scores are not probabilities. Fewer than five valid rows return INSUFFICIENT_DATA with no candidates. Source or configuration failures are explicit errors.

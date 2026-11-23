@@ -2,7 +2,7 @@
 
 ## Current product
 
-Kotlin and Jetpack Compose application for worker-confirmed assessment reporting. It collects an assessment timestamp and one explicitly selected triage category. It does not generate diagnoses, treatment advice, AI predictions or referrals. No trained AI model is bundled in this release.
+Kotlin and Jetpack Compose application for worker-confirmed assessment reporting. It collects an assessment timestamp and one explicitly selected triage category. It does not generate diagnoses, treatment advice or referrals. Reporting-quality anomaly review is provided by the hosted backend; no clinical model is bundled in the app.
 
 The dashboard reads encrypted records saved on the current device and filters them by authenticated worker and facility. Counts and recent reports are derived from those records. They are not fixed examples, national totals or an all-device dashboard.
 
@@ -46,7 +46,7 @@ Requires JDK 17 or 21 and Android SDK platform 35. Minimum supported OS is Andro
 .\gradlew.bat testDebugUnitTest assembleDebug lintDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/app-debug.apk`. Use the same signing key for installable updates. Earlier verification passed ten JVM tests, build and lint; this does not establish phone-level behaviour.
+APK output: `app/build/outputs/apk/debug/app-debug.apk`. Use the same signing key for installable updates. The reporting-quality preview passed fourteen JVM tests, assembly and lint before the branding revision. Final branded build results and phone checks are recorded separately in the release evidence; automated checks do not establish all phone-level behaviour.
 
 Before field use, install on a test phone and verify browser callback, encrypted persistence after offline restart, delayed delivery after connectivity returns, account isolation and OS background scheduling. Use labelled synthetic records for engineering checks. Patient-data pilots require their own authorisation and evaluation.
 
@@ -56,4 +56,8 @@ Sign-in/facility errors require checking the worker's administrator-assigned org
 
 ## AI boundary
 
-The proposed first AI module is reporting-quality review, contingent on an approved operational dataset and evaluation. Clinical triage prediction, voice/image inference and signed model installation are not current features. The application must not label manually selected triage as an AI result.
+The first implemented AI module is experimental reporting-quality review of the assigned facility’s live DHIS2 snapshot. The current six reports are engineering tests; operational validation remains pending. See MODEL_CARD.md and DATA_SOURCES.md. Clinical triage prediction, voice/image inference and signed model installation are not current features. The application must not label manually selected triage as an AI result.
+
+## Live reporting review
+
+The reporting-quality card queries the authenticated backend, refreshes every thirty seconds while the dashboard is open and supports manual refresh. It shows live facility-level counts separately from the device outbox, along with snapshot time, model status and dataset fingerprint. It clears results on logout and presents source failures explicitly.
