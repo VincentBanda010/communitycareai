@@ -65,3 +65,7 @@ The reporting-quality card queries the authenticated backend, refreshes every th
 ## Restored nurse workspace
 
 Version 1.2 restores the original dashboard and adds encrypted local patient registration, search, appointments and worker-entered notes. The Assess tab retains live DHIS2 reporting and reporting-quality AI. No sample patient rows or fixed counts are inserted. See RESTORED_APP.md for exact data boundaries, supported actions and the 18-test build evidence.
+
+## Native form authentication
+
+Native forms are the primary registration and sign-in experience in version 1.3. The AppAuth client and callback above are retained for optional browser-based account setup. See NATIVE_ACCOUNTS.md for the original fields, session storage, fixed engineering-pilot registration, role boundaries and current email-recovery status.

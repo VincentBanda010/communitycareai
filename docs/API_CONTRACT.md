@@ -1,6 +1,6 @@
 # Android and Python API contract
 
-Base URL: `https://care-api.95.111.247.118.sslip.io/`. All `/api/v1` requests require `Authorization: Bearer <worker-token>`. Encounter requests from Android also send `X-Organisation-Unit: <original-facility-uid>`.
+Base URL: `https://care-api.95.111.247.118.sslip.io/`. Protected `/api/v1` requests require `Authorization: Bearer <worker-token>`. Encounter requests from Android also send `X-Organisation-Unit: <original-facility-uid>`.
 
 ## Identity
 
@@ -47,3 +47,10 @@ There is no current API for patient registers, clinical AI inference, all-facili
 ## Reporting quality
 
 GET /api/v1/reporting/quality requires the worker bearer token. Android sends X-Organisation-Unit with the original assigned facility. A mismatch returns 403 before source access. The response contains orgUnit, generatedAt, source, dataContext, reportCount, validCount, invalidCount, categoryCounts, delayedOver24Hours, snapshotLimit, truncated, cacheSeconds, modelVersion, datasetFingerprint, modelStatus, trainingSamples, minimumSamples, fittedOn, candidates and notice. Candidate fields are eventId, occurredAt, category, delayHours, anomalyScore and reviewSuggested. Scores are not probabilities. Fewer than five valid rows return INSUFFICIENT_DATA with no candidates. Source or configuration failures are explicit errors.
+
+
+## Native account forms
+
+POST /api/v1/auth/register, /api/v1/auth/login, /api/v1/auth/refresh and /api/v1/auth/password-reset accept their corresponding form bodies without an existing bearer header. See NATIVE_ACCOUNTS.md for exact fields and data handling. Registration returns 201 with ENGINEERING_PILOT or AWAITING_ASSIGNMENT. Login and refresh return accessToken, refreshToken and expiresIn only after signed identity and organisation validation. Reset returns a generic 202 when recovery delivery is configured; missing SMTP configuration returns 503 without claiming delivery.
+
+Account form validation responses are redacted. Unknown fields are rejected, client-supplied facility or administrator permissions are not accepted, declared oversized forms return 413, and rate limits return 429. A requested role remains profile metadata. Ordinary workers do not request the backend's account-management scope. Protected reporting and identity routes continue to require a verified bearer token.
