@@ -26,6 +26,8 @@ class AppContainer(application: Application) {
             .followRedirects(false).followSslRedirects(false).build())
         .addConverterFactory(GsonConverterFactory.create()).build().create(BackendApi::class.java)
 
+    val quality = QualityRepository(auth, api)
+
     fun remote(profile: Profile) = object : EncounterRemote {
         override suspend fun submit(item: LocalEncounter): Receipt {
             check(item.belongsTo(profile))

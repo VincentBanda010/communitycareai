@@ -57,6 +57,8 @@ data class LocalEncounter(
 }
 
 interface BackendApi {
+    @GET("api/v1/reporting/quality")
+    suspend fun quality(@Header("Authorization") bearer: String, @Header("X-Organisation-Unit") orgUnit: String): Response<QualitySnapshot>
     @GET("api/v1/me")
     suspend fun me(@Header("Authorization") bearer: String): Response<Profile>
     @PUT("api/v1/encounters/{id}")

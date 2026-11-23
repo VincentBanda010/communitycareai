@@ -1,6 +1,7 @@
 package com.communitycare.ai
 
 import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -40,7 +41,12 @@ class MainActivity : ComponentActivity() {
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
+        splash.setOnExitAnimationListener { screen ->
+            screen.view.animate().alpha(0f).setDuration(220L)
+                .withEndAction { screen.remove() }.start()
+        }
         enableEdgeToEdge()
         setContent {
             CommunityCareTheme {

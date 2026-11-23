@@ -12,8 +12,8 @@ android {
         applicationId = "com.communitycare.ai"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1-preview"
         manifestPlaceholders["appAuthRedirectScheme"] = "communitycare"
         buildConfigField("String", "API_BASE_URL", "\"https://care-api.95.111.247.118.sslip.io/\"")
         buildConfigField("String", "OIDC_ISSUER", "\"https://care-login.95.111.247.118.sslip.io/realms/communitycare\"")
@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("net.openid:appauth:0.11.1")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")

@@ -105,3 +105,8 @@ device checks in addition to JVM tests and compilation.
 - [Backend guide](docs/BACKEND_GUIDE.md)
 - [API contract](docs/API_CONTRACT.md)
 - [Current submission status and limitations](docs/SUBMISSION_STATUS.md)
+
+
+## Reporting-quality preview — 23 November 2026
+
+Live nonclinical reporting-quality AI is implemented. See [release status](docs/REPORTING_QUALITY_RELEASE.md), [model card](docs/MODEL_CARD.md) and [data provenance](docs/DATA_SOURCES.md). The current owned DHIS2 pilot includes six engineering reports; the model is experimental and has no clinical validation.

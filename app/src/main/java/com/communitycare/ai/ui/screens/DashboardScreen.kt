@@ -22,7 +22,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun DashboardScreen(profile: Profile, records: List<LocalEncounter>, sync: SyncStatus,
                     error: String?, onRecord: (Triage) -> Boolean, onSync: () -> Unit,
-                    onSignIn: () -> Unit, onLogout: () -> Unit) {
+                    onSignIn: () -> Unit, onLogout: () -> Unit, quality: QualityUiState,
+                    onRefreshQuality: () -> Unit) {
     var recordDialog by remember { mutableStateOf(false) }
     var logoutDialog by remember { mutableStateOf(false) }
     var triage by remember { mutableStateOf<Triage?>(null) }
@@ -76,6 +77,7 @@ fun DashboardScreen(profile: Profile, records: List<LocalEncounter>, sync: SyncS
                 }
             }
             error?.let { message -> item { Text(message, color = MaterialTheme.colorScheme.error) } }
+            item { ReportingQualityCard(quality, onRefreshQuality) }
             item { Text("Recent reports", style = MaterialTheme.typography.titleLarge) }
             if (records.isEmpty()) item { Text("No reports saved yet. Record an assessment outcome to begin.") }
             items(records.sortedByDescending { it.occurredAt }.take(50), key = { it.id }) { record ->
