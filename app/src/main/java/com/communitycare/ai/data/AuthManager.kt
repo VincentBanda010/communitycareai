@@ -134,6 +134,26 @@ class AuthManager(context: Context, private val storage: SecureStorage) {
         token
     }
 
+    suspend fun refreshProfile(api: BackendApi) {
+        val expected = mutableProfile.value ?: throw HttpFailure(401)
+        mutex.withLock {
+            nativeSession = nativeSession?.let { NativeStoredSession(it.accessToken,it.refreshToken,0,it.profile,it.remember) }
+            authorization?.setNeedsTokenRefresh(true)
+        }
+        val token = accessToken(expected,api)
+        val account = api.me("Bearer $token").checkedBody().validate()
+        mutex.withLock {
+            if (account.subject != expected.subject) throw HttpFailure(401)
+            nativeSession = nativeSession?.let {
+                val saved = NativeStoredSession(it.accessToken,it.refreshToken,it.expiresAt,account,it.remember)
+                storage.write("native-session.bin",if(saved.remember) gson.toJson(saved) else null)
+                saved
+            }
+            authorization?.let { storage.write("session.bin",gson.toJson(StoredSession(it.jsonSerializeString(),account))) }
+            mutableProfile.value=account
+        }
+    }
+
     suspend fun logout() = mutex.withLock {
         storage.write("native-session.bin", null)
         nativeSession = null

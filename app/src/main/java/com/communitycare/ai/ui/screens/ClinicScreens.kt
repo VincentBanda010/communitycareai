@@ -32,7 +32,7 @@ fun ClinicRecordsScreen(profile: Profile, clinic: ClinicStore, mode: String,
             style = MaterialTheme.typography.headlineMedium, color = TealDark, fontWeight = FontWeight.Bold)
         Text("Private register · Saved on this phone", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
         OutlinedTextField(query, { query = it }, label = { Text("Search patients") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-        Button(onClick = onAddPatient) { Text("New patient") }
+        Button(enabled=profile.canRecordCare(),onClick = onAddPatient) { Text("New patient") }
         if (patients.isEmpty()) Text("No patients saved yet. Add a patient to start your register.")
         if (mode != "PATIENT") {
             Text("Select a patient below to add ${if (mode == "APPOINTMENT") "an appointment" else "a worker-entered note"}.")
@@ -73,8 +73,8 @@ fun ClinicRecordsScreen(profile: Profile, clinic: ClinicStore, mode: String,
                     Text(clinicTime(entry.at), style = MaterialTheme.typography.bodySmall)
                     Text(entry.text)
                 }
-                TextButton(onClick = { entryKind = "NOTE" }) { Text("Add consultation or treatment note") }
-                TextButton(onClick = { entryKind = "APPOINTMENT" }) { Text("Schedule appointment") }
+                TextButton(enabled=profile.canRecordCare(),onClick = { entryKind = "NOTE" }) { Text("Add consultation or treatment note") }
+                TextButton(enabled=profile.canRecordCare(),onClick = { entryKind = "APPOINTMENT" }) { Text("Schedule appointment") }
                 TextButton(onClick = { selected = null; onConsultation() }) { Text("Record confirmed reporting outcome") }
             } }, confirmButton = { TextButton(onClick = { selected = null }) { Text("Close") } })
         else EntryDialog(patient, entryKind!!, onDismiss = { entryKind = null }, onSave = { text, at ->

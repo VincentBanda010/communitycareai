@@ -16,6 +16,7 @@ class EncounterStore(private val storage: SecureStorage) : EncounterQueue {
     @Synchronized override fun snapshot() = mutableRecords.value.toList()
 
     @Synchronized fun add(profile: Profile, triage: Triage) {
+        require(profile.canRecordCare()) { "Your role cannot create care reports" }
         save(mutableRecords.value + LocalEncounter.create(profile, triage))
     }
 

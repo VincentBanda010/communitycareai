@@ -1,3 +1,5 @@
+Historical 1.4 release notes. The original dashboard is restored in [version 1.5 with staff roles](STAFF_ROLES.md).
+
 # CommunityCare 1.4 preview
 
 Updated 23 November 2026. This release supersedes the earlier UI and native-account previews.

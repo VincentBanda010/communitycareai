@@ -214,7 +214,7 @@ fun SignUpScreen(
                         colors = authTextFieldColors()
                     )
 
-                    Text("New accounts join the engineering-test pilot. Use test data only. Your requested role does not grant supervisor or administrator permissions.", fontSize = 12.sp, color = TextSecondary)
+                    Text("Test-pilot accounts can use their selected staff role immediately. Operational roles require approval. No staff role grants identity-server administrator access.", fontSize = 12.sp, color = TextSecondary)
                     Spacer(Modifier.height(4.dp))
 
                     Button(

@@ -58,3 +58,7 @@ Account form validation responses are redacted. Unknown fields are rejected, cli
 ## Facility team messaging
 
 See [the 1.4 messaging contract](ORGANIZED_APP.md#messaging-api) for authenticated facility chat, limits and retry semantics.
+
+## Staff roles and shared task workflows — version 1.5
+
+See [the staff-role contract](STAFF_ROLES.md#api-additions) for verified role claims, approval, case transitions and staff endpoints. Protected routes now require an active assigned staff role.

@@ -1,3 +1,5 @@
+Current registration and staff-role authorization behavior is documented in [STAFF_ROLES.md](STAFF_ROLES.md). The 1.3 implementation notes below are historical.
+
 # Original native account forms
 
 Version 1.3 preview, 23 November 2026.

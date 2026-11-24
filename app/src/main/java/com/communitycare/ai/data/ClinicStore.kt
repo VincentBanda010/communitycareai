@@ -30,6 +30,7 @@ class ClinicStore(read: () -> String?, private val write: (String) -> Unit) {
 
     @Synchronized fun addPatient(profile: Profile, name: String, age: Int): ClinicPatient {
         profile.validate()
+        require(profile.canRecordCare()) { "Your role cannot create care records" }
         val clean = name.trim()
         require(clean.isNotBlank() && clean.length <= 120 && age in 0..130)
         require(state.value.patients.size < 5000)
@@ -41,6 +42,7 @@ class ClinicStore(read: () -> String?, private val write: (String) -> Unit) {
 
     @Synchronized fun addEntry(profile: Profile, patientId: String, kind: String, text: String, at: String) {
         profile.validate()
+        require(profile.canRecordCare()) { "Your role cannot create care records" }
         require(state.value.patients.any { it.id == patientId && it.belongsTo(profile) })
         require(kind in setOf("APPOINTMENT", "NOTE"))
         require(text.trim().isNotBlank() && text.trim().length <= 2000)

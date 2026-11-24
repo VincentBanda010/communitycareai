@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.communitycare.ai.AppContainer
 import com.communitycare.ai.data.Triage
+import com.communitycare.ai.data.assignedRole
 import com.communitycare.ai.data.QualityUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -27,7 +28,11 @@ fun AppNavGraph(navController: NavHostController, container: AppContainer, busy:
     LaunchedEffect(account) {
         if (account == null) container.quality.clear()
         else while (isActive) {
-            container.quality.refresh(account)
+            if(account.assignedRole()=="PENDING") {
+                try { container.auth.refreshProfile(container.api) }
+                catch(c: kotlinx.coroutines.CancellationException){throw c}
+                catch(_: Exception) { }
+            } else container.quality.refresh(account)
             delay(30_000)
         }
     }
@@ -35,11 +40,15 @@ fun AppNavGraph(navController: NavHostController, container: AppContainer, busy:
         if (account != null && sync.checkedAt != null) container.quality.refresh(account)
     }
     if (account != null) {
-        key(account.subject, account.orgUnit) {
+        key(account.subject, account.orgUnit, account.assignedRole()) {
+        if(account.assignedRole()=="PENDING") {
+            PendingRoleScreen(container,onLogout)
+        } else {
         DashboardScreen(account, allRecords.filter { it.belongsTo(account) }, sync,
             error, onRecord, onSync, onBrowserSignIn, onLogout,
             if (quality.owner == account.subject && quality.orgUnit == account.orgUnit) quality else QualityUiState(),
             { scope.launch { container.quality.refresh(account) } }, container.clinic, container)
+        }
         }
         return
     }

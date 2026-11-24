@@ -45,9 +45,9 @@ fun ReportingScreen(profile: Profile, records: List<LocalEncounter>, sync: SyncS
                     Text("Assessment reports", color = Color.White,
                         style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(8.dp))
-                    Text("Record the outcome you confirmed.", color = Color.White)
+                    Text(if(profile.canRecordCare()) "Record the outcome you confirmed." else "Supervisor reporting oversight", color = Color.White)
                     Spacer(Modifier.height(16.dp))
-                    Button(onClick = { triage = null; saveError = false; recordDialog = true }) { Text("New report") }
+                    Button(enabled = profile.canRecordCare(), onClick = { triage = null; saveError = false; recordDialog = true }) { Text("New report") }
                 }
             }
             item { ReportingQualityCard(quality, onRefreshQuality) }

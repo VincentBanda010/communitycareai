@@ -3,7 +3,7 @@
 Native Kotlin / Jetpack Compose app connected to the owned CommunityCare services
 on Contabo. Minimum Android version: 8.0 (API 26).
 
-Current release: **1.4 preview**. [Download Android app](https://github.com/VincentBanda010/communitycareai/releases/tag/v1.4.0-preview). See [screen organization and messaging contract](docs/ORGANIZED_APP.md).
+Current release: **1.5 preview**. [Download Android app](https://github.com/VincentBanda010/communitycareai/releases/tag/v1.5.0-preview). See [screen organization and messaging contract](docs/ORGANIZED_APP.md).
 
 ## Connected services
 
@@ -23,7 +23,7 @@ DHIS2 is contacted by the backend only.
 - Native account creation and sign-in use the hosted account endpoints. Browser setup uses AppAuth, OpenID Connect Authorization Code + PKCE S256.
   The backend confirms the authenticated worker's identity and assigned organisation
   using `GET /api/v1/me` before the app opens the dashboard.
-- New accounts can register in the app. The server assigns the configured engineering pilot facility; requested roles do not grant privileges. Operational facility assignments remain administrator controlled.
+- New accounts can register in the app. The server assigns the configured engineering pilot facility; selected application roles are immediately available in the explicitly configured engineering pilot. Operational facility assignment and role approval remain controlled.
 - Tokens and report records are encrypted using AES-256-GCM and an Android Keystore
   key. App backup is disabled. Unreadable encrypted data is preserved and reported,
   rather than silently reset.
@@ -120,3 +120,7 @@ Version 1.2 restores the original CommunityCare dashboard, quick actions, patien
 ## Original on phone account forms
 
 Version 1.3 restores the original Create Account and Sign In fields directly on the phone, connected to the owned identity service through the Python backend. Live registration, login, refresh, pilot-only assignment and reporting analysis are verified. Checks: 49 backend tests and 22 Android tests, assembly and lint. [Account guide](docs/NATIVE_ACCOUNTS.md). Gmail recovery email still requires the owner’s app password.
+
+## Four staff roles and original dashboard
+
+See [STAFF_ROLES.md](docs/STAFF_ROLES.md) for the HSA, Nurse, Clinical Officer and Supervisor task matrix, test-pilot registration policy, operational approval, audit history and API contract.

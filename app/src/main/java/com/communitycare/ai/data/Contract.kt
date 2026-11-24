@@ -21,10 +21,11 @@ enum class DeliveryState(val label: String) {
     CONFLICT("Record conflict — needs review")
 }
 
-data class Profile(val subject: String, val name: String, val username: String, val orgUnit: String) {
+data class Profile(val subject: String, val name: String, val username: String, val orgUnit: String, val role: String? = "HSA") {
     fun validate(): Profile {
         if (subject.isNullOrBlank() || name.isNullOrBlank() || username.isNullOrBlank() ||
-            !Regex("[A-Za-z][A-Za-z0-9]{10}").matches(orgUnit.orEmpty())) {
+            !Regex("[A-Za-z][A-Za-z0-9]{10}").matches(orgUnit.orEmpty()) ||
+            (role != null && role !in staffRoles + "PENDING")) {
             throw IOException("Invalid account response")
         }
         return this
@@ -58,6 +59,13 @@ data class LocalEncounter(
 }
 
 interface BackendApi {
+    @GET("api/v1/workflows") suspend fun caseInbox(@Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String): Response<CaseInbox>
+    @GET("api/v1/workflows/{id}") suspend fun caseDetail(@Path("id") id: String, @Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String): Response<CareCase>
+    @PUT("api/v1/workflows/{id}") suspend fun createCase(@Path("id") id: String, @Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String, @Body form: CaseForm): Response<CareCase>
+    @POST("api/v1/workflows/{id}/actions") suspend fun caseAction(@Path("id") id: String, @Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String, @Body form: CaseCommand): Response<CareCase>
+    @GET("api/v1/staff") suspend fun staff(@Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String): Response<StaffDirectory>
+    @PUT("api/v1/staff/{id}/role") suspend fun setStaffRole(@Path("id") id: String, @Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String, @Body form: StaffRoleChange): Response<StaffMember>
+
     @GET("api/v1/messages") suspend fun messages(@Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String): Response<TeamInbox>
     @PUT("api/v1/messages/{id}") suspend fun sendMessage(@Path("id") id: String, @Header("Authorization") bearer: String, @Header("X-Organisation-Unit") org: String, @Body form: MessageForm): Response<TeamMessage>
 
